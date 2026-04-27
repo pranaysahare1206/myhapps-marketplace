@@ -2,10 +2,20 @@
   {
     "id": "calculator",
     "name": "Super Calculator",
+    "isPremium": false,
+    "pointCost": 0,
+    "iconType": "emoji",
+    "iconData": "📱",
+    "mainFile": "index.html",
+    "files": ["index.html", "style.css", "script.js"]
+  },
+    {
+    "id": "Notes",
+    "name": "Super Notes",
     "isPremium": true,
     "pointCost": 10,
     "iconType": "emoji",
-    "iconData": "📱",
+    "iconData": "📃",
     "mainFile": "index.html",
     "files": ["index.html", "style.css", "script.js"]
   }
