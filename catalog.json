@@ -1,22 +1,32 @@
 [
   {
     "id": "calculator",
-    "name": "Super Calculator",
+    "name": "Quick Calculator",
     "isPremium": false,
     "pointCost": 0,
     "iconType": "emoji",
-    "iconData": "📱",
+    "iconData": "🧮",
     "mainFile": "index.html",
     "files": ["index.html", "style.css", "script.js"]
   },
-    {
-    "id": "Notes",
-    "name": "Super Notes",
+  {
+    "id": "weather",
+    "name": "Live Weather Pro",
     "isPremium": true,
-    "pointCost": 10,
+    "pointCost": 15,
     "iconType": "emoji",
-    "iconData": "📃",
+    "iconData": "⛅",
     "mainFile": "index.html",
-    "files": ["index.html", "style.css", "script.js"]
+    "files": ["index.html", "style.css", "app.js"]
+  },
+  {
+    "id": "notes",
+    "name": "Secure Notes",
+    "isPremium": true,
+    "pointCost": 20,
+    "iconType": "color",
+    "iconData": "0xFFE91E63",
+    "mainFile": "index.html",
+    "files": ["index.html", "script.js"]
   }
 ]
