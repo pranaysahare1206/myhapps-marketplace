@@ -2,10 +2,11 @@
   {
     "id": "calculator",
     "name": "Super Calculator",
-    "isPremium": true,
-    "pointCost": 10,
+    "isPremium": false,
+    "pointCost": 0,
+    "iconType": "emoji",
     "iconData": "📱",
     "mainFile": "index.html",
-    "files": ["index.html", "style.css", "script.js"]  <-- The app will download these automatically!
+    "files": ["index.html", "style.css", "script.js"]
   }
 ]
