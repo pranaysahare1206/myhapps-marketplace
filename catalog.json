@@ -1,1 +1,11 @@
-
+[
+  {
+    "id": "calculator",
+    "name": "Super Calculator",
+    "isPremium": true,
+    "pointCost": 10,
+    "iconData": "📱",
+    "mainFile": "index.html",
+    "files": ["index.html", "style.css", "script.js"]  <-- The app will download these automatically!
+  }
+]
