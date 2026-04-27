@@ -2,8 +2,8 @@
   {
     "id": "calculator",
     "name": "Super Calculator",
-    "isPremium": false,
-    "pointCost": 0,
+    "isPremium": True,
+    "pointCost": 10,
     "iconType": "emoji",
     "iconData": "📱",
     "mainFile": "index.html",
