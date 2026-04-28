@@ -28,5 +28,25 @@
     "iconData": "0xFFE91E63",
     "mainFile": "index.html",
     "files": ["index.html", "script.js"]
+  },
+  {
+    "id": "Mini-test-1",
+    "name": "Mini-test-1",
+    "isPremium": true,
+    "pointCost": 2,
+    "iconType": "color",
+    "iconData": "0xFFE91E63",
+    "mainFile": "index.html",
+    "files": ["index.html"]
+  },
+  {
+    "id": "Mini-test-2",
+    "name": "Mini-test-2",
+    "isPremium": false,
+    "pointCost": 0,
+    "iconType": "⚙️",
+    "iconData": "0xFFE91E63",
+    "mainFile": "index.html",
+    "files": ["index.html"]
   }
 ]
