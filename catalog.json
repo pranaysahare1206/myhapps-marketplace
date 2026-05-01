@@ -1,52 +1,122 @@
 [
-  {
-    "id": "calculator",
-    "name": "Quick Calculator",
+      {
+    "id": "expense-tracker",
+    "name": "Expense Tracker",
     "isPremium": false,
     "pointCost": 0,
     "iconType": "emoji",
-    "iconData": "🧮",
+    "iconData": "💰",
     "mainFile": "index.html",
-    "files": ["index.html", "style.css", "script.js"]
+    "files": ["index.html", "app.js"],
+    "category": "utility",
+    "description": "Track daily expenses, set budgets, view spending analytics with charts"
   },
-  {
-    "id": "weather",
-    "name": "Live Weather Pro",
-    "isPremium": true,
-    "pointCost": 15,
-    "iconType": "emoji",
-    "iconData": "⛅",
-    "mainFile": "index.html",
-    "files": ["index.html", "style.css", "app.js"]
-  },
-  {
-    "id": "notes",
-    "name": "Secure Notes",
-    "isPremium": true,
-    "pointCost": 20,
-    "iconType": "color",
-    "iconData": "0xFFE91E63",
-    "mainFile": "index.html",
-    "files": ["index.html", "script.js"]
-  },
-  {
-    "id": "Mini-test-1",
-    "name": "Mini-test-1",
-    "isPremium": true,
-    "pointCost": 2,
-    "iconType": "color",
-    "iconData": "0xFFE91E63",
-    "mainFile": "index.html",
-    "files": ["index.html"]
-  },
-  {
-    "id": "Mini-test-2",
-    "name": "Mini-test-2",
+      {
+    "id": "daily-tracker",
+    "name": "Daily Tracker",
     "isPremium": false,
     "pointCost": 0,
-    "iconType": "⚙️",
-    "iconData": "0xFFE91E63",
+    "iconType": "emoji",
+    "iconData": "📊",
     "mainFile": "index.html",
-    "files": ["index.html"]
+    "files": ["index.html", "app.js"],
+    "category": "utility",
+    "description": "Track mood, water intake, sleep, and daily tasks in one place"
+  },
+      {
+    "id": "habit-tracker",
+    "name": "Habit Tracker",
+    "isPremium": true,
+    "pointCost": 10,
+    "iconType": "emoji",
+    "iconData": "🎯",
+    "mainFile": "index.html",
+    "files": ["index.html", "app.js"],
+    "category": "utility",
+    "description": "Build better habits with streaks, reminders, and progress visualization"
+  },
+      {
+    "id": "snake-game",
+    "name": "Snake Rush",
+    "isPremium": false,
+    "pointCost": 0,
+    "iconType": "emoji",
+    "iconData": "🐍",
+    "mainFile": "index.html",
+    "files": ["index.html", "game.js"],
+    "category": "game",
+    "description": "Classic snake game with modern graphics, power-ups, and high scores"
+  },
+      {
+    "id": "memory-match",
+    "name": "Memory Match",
+    "isPremium": false,
+    "pointCost": 0,
+    "iconType": "emoji",
+    "iconData": "🧠",
+    "mainFile": "index.html",
+    "files": ["index.html", "game.js"],
+    "category": "game",
+    "description": "Test your memory with this card matching game featuring multiple themes"
+  },
+      {
+    "id": "tic-tac-toe",
+    "name": "Tic Tac Toe Pro",
+    "isPremium": false,
+    "pointCost": 0,
+    "iconType": "emoji",
+    "iconData": "⭕",
+    "mainFile": "index.html",
+    "files": ["index.html", "game.js"],
+    "category": "game",
+    "description": "Classic game with AI opponent, 2-player mode, and win statistics"
+  },
+      {
+    "id": "word-guess",
+    "name": "Word Guess",
+    "isPremium": true,
+    "pointCost": 10,
+    "iconType": "emoji",
+    "iconData": "📝",
+    "mainFile": "index.html",
+    "files": ["index.html", "game.js"],
+    "category": "game",
+    "description": "Guess the hidden word in limited tries with color hints"
+  },
+      {
+    "id": "collage-maker",
+    "name": "Collage Maker",
+    "isPremium": true,
+    "pointCost": 10,
+    "iconType": "emoji",
+    "iconData": "🖼️",
+    "mainFile": "index.html",
+    "files": ["index.html", "app.js"],
+    "category": "tool",
+    "description": "Create beautiful photo collages with layouts, filters, and text overlays"
+  },
+      {
+    "id": "qr-generator",
+    "name": "QR Code Generator",
+    "isPremium": false,
+    "pointCost": 0,
+    "iconType": "emoji",
+    "iconData": "📱",
+    "mainFile": "index.html",
+    "files": ["index.html", "app.js"],
+    "category": "tool",
+    "description": "Generate QR codes for URLs, text, WiFi, contacts with custom styling"
+  },
+      {
+    "id": "id-card-maker",
+    "name": "ID Card PDF Maker",
+    "isPremium": true,
+    "pointCost": 10,
+    "iconType": "emoji",
+    "iconData": "🪪",
+    "mainFile": "index.html",
+    "files": ["index.html", "app.js"],
+    "category": "tool",
+    "description": "Create professional ID card PDFs with photo crop, align, and dual-side layout"
   }
 ]
