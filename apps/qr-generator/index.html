@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Generator - Mini Tool</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.app-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 25px;
+}
+.header h1 { font-size: 28px; margin-bottom: 8px; }
+.header p { color: #a5b4fc; font-size: 14px; }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.tab {
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 10px;
+  color: #a5b4fc;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+.tab.active {
+  background: #6366f1;
+  color: white;
+}
+
+.form-section {
+  background: rgba(255,255,255,0.95);
+  padding: 25px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+.input-group { margin-bottom: 15px; }
+.input-group label {
+  display: block;
+  font-size: 13px;
+  color: #4b5563;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.input-group input,
+.input-group textarea,
+.input-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color 0.3s;
+}
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+.input-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.options-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.color-picker {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.color-picker input[type="color"] {
+  width: 50px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.4); }
+.btn-secondary {
+  background: #e0e7ff;
+  color: #4338ca;
+  margin-top: 10px;
+}
+
+.result-section {
+  background: rgba(255,255,255,0.95);
+  padding: 25px;
+  border-radius: 20px;
+  text-align: center;
+  display: none;
+}
+.result-section.active { display: block; }
+#qrcode {
+  display: inline-block;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+#qrcode img {
+  display: block;
+  max-width: 100%;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+.action-buttons .btn { flex: 1; margin-top: 0; }
+
+.history-section {
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 20px;
+  margin-top: 20px;
+}
+.history-section h3 {
+  font-size: 16px;
+  color: #1f2937;
+  margin-bottom: 15px;
+}
+.history-list { list-style: none; }
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.history-item .info { flex: 1; }
+.history-item .type { font-size: 12px; color: #6366f1; font-weight: 600; }
+.history-item .content {
+  font-size: 13px;
+  color: #4b5563;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+.history-item .date { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+.history-item .actions {
+  display: flex;
+  gap: 8px;
+}
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn.view { background: #dbeafe; }
+.icon-btn.delete { background: #fee2e2; }
+
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  color: #9ca3af;
+}
+.empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+
+.wifi-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <h1>📱 QR Code Generator</h1>
+    <p>Create custom QR codes instantly</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setType('url')">🔗 URL</button>
+    <button class="tab" onclick="setType('text')">📝 Text</button>
+    <button class="tab" onclick="setType('wifi')">📶 WiFi</button>
+    <button class="tab" onclick="setType('contact')">👤 Contact</button>
+    <button class="tab" onclick="setType('email')">📧 Email</button>
+  </div>
+
+  <div class="form-section">
+    <!-- URL Input -->
+    <div class="input-group" id="urlInput">
+      <label>Website URL</label>
+      <input type="url" id="url" placeholder="https://example.com">
+    </div>
+
+    <!-- Text Input -->
+    <div class="input-group" id="textInput" style="display:none">
+      <label>Text Content</label>
+      <textarea id="text" placeholder="Enter your text here..."></textarea>
+    </div>
+
+    <!-- WiFi Input -->
+    <div id="wifiInput" style="display:none">
+      <div class="wifi-fields">
+        <div class="input-group">
+          <label>Network Name (SSID)</label>
+          <input type="text" id="wifiSsid" placeholder="WiFi Name">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="text" id="wifiPass" placeholder="Password">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Security Type</label>
+        <select id="wifiType">
+          <option value="WPA">WPA/WPA2</option>
+          <option value="WEP">WEP</option>
+          <option value="nopass">No Password</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Contact Input -->
+    <div id="contactInput" style="display:none">
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="contactName" placeholder="John Doe">
+      </div>
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input type="tel" id="contactPhone" placeholder="+1 234 567 8900">
+      </div>
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="contactEmail" placeholder="john@example.com">
+      </div>
+    </div>
+
+    <!-- Email Input -->
+    <div id="emailInput" style="display:none">
+      <div class="input-group">
+        <label>To Email</label>
+        <input type="email" id="emailTo" placeholder="recipient@example.com">
+      </div>
+      <div class="input-group">
+        <label>Subject</label>
+        <input type="text" id="emailSubject" placeholder="Email Subject">
+      </div>
+      <div class="input-group">
+        <label>Message (optional)</label>
+        <textarea id="emailBody" placeholder="Email body..."></textarea>
+      </div>
+    </div>
+
+    <div class="options-section">
+      <div class="input-group">
+        <label>QR Color</label>
+        <div class="color-picker">
+          <input type="color" id="qrColor" value="#000000">
+          <input type="color" id="bgColor" value="#ffffff">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Size</label>
+        <select id="qrSize">
+          <option value="150">Small (150px)</option>
+          <option value="200" selected>Medium (200px)</option>
+          <option value="300">Large (300px)</option>
+          <option value="400">Extra Large (400px)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generateQR()">Generate QR Code</button>
+  </div>
+
+  <div class="result-section" id="resultSection">
+    <div id="qrcode"></div>
+    <div class="action-buttons">
+      <button class="btn btn-secondary" onclick="downloadQR()">⬇️ Download</button>
+      <button class="btn btn-secondary" onclick="shareQR()">📤 Share</button>
+    </div>
+  </div>
+
+  <div class="history-section">
+    <h3>📜 Recent QR Codes</h3>
+    <ul class="history-list" id="historyList">
+      <li class="empty-state">
+        <div class="icon">📭</div>
+        <p>No QR codes generated yet</p>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake Rush - Mini Game</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  color: white;
+}
+.game-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.game-header h1 { font-size: 28px; margin-bottom: 10px; }
+.stats-bar {
+  display: flex;
+  gap: 30px;
+  font-size: 18px;
+}
+.stat { display: flex; align-items: center; gap: 8px; }
+.stat .label { color: #888; font-size: 14px; }
+.stat .value { font-weight: bold; color: #4ade80; }
+
+.game-container {
+  position: relative;
+  background: #0f0f23;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+#gameCanvas {
+  display: block;
+  border-radius: 12px;
+  background: #0a0a1a;
+}
+
+.controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-start {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  color: #0f0f23;
+}
+.btn-pause {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #0f0f23;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(74,222,128,0.3); }
+
+.mobile-controls {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  gap: 8px;
+  justify-content: center;
+}
+.mobile-controls .btn-dir {
+  width: 60px;
+  height: 60px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+.mobile-controls .btn-dir:active { background: rgba(255,255,255,0.2); }
+.mobile-controls .btn-dir:nth-child(2) { grid-column: 2; }
+.mobile-controls .btn-dir:nth-child(3) { grid-column: 1; grid-row: 2; }
+.mobile-controls .btn-dir:nth-child(4) { grid-column: 2; grid-row: 2; }
+.mobile-controls .btn-dir:nth-child(5) { grid-column: 3; grid-row: 2; }
+
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  z-index: 10;
+}
+.overlay.hidden { display: none; }
+.overlay h2 { font-size: 32px; margin-bottom: 20px; }
+.overlay p { color: #888; margin-bottom: 20px; }
+.high-score { color: #4ade80; font-size: 24px; margin-bottom: 20px; }
+
+.speed-selector {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.speed-selector label { color: #888; font-size: 14px; }
+.speed-selector select {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #1a1a2e;
+  color: white;
+}
+
+.leaderboard {
+  margin-top: 20px;
+  background: rgba(255,255,255,0.05);
+  padding: 20px;
+  border-radius: 16px;
+  min-width: 300px;
+}
+.leaderboard h3 { margin-bottom: 15px; text-align: center; }
+.score-list { list-style: none; }
+.score-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.score-list li:last-child { border-bottom: none; }
+.score-list .rank { color: #4ade80; width: 30px; }
+.score-list .date { color: #666; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="game-header">
+  <h1>🐍 Snake Rush</h1>
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="label">Score:</span>
+      <span class="value" id="score">0</span>
+    </div>
+    <div class="stat">
+      <span class="label">High Score:</span>
+      <span class="value" id="highScore">0</span>
+    </div>
+    <div class="stat">
+      <span class="label">Speed:</span>
+      <span class="value" id="speedLevel">Normal</span>
+    </div>
+  </div>
+</div>
+
+<div class="game-container">
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  
+  <div class="overlay" id="startOverlay">
+    <h2>🐍 Snake Rush</h2>
+    <p>Use arrow keys or buttons to control</p>
+    <div class="high-score">High Score: <span id="overlayHighScore">0</span></div>
+    <button class="btn btn-start" onclick="startGame()">Start Game</button>
+    <div class="speed-selector">
+      <label>Speed:</label>
+      <select id="speedSelect">
+        <option value="150">Slow</option>
+        <option value="100" selected>Normal</option>
+        <option value="70">Fast</option>
+        <option value="50">Insane</option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="overlay hidden" id="gameOverOverlay">
+    <h2>Game Over!</h2>
+    <p>Your Score: <span id="finalScore">0</span></p>
+    <div class="high-score">High Score: <span id="finalHighScore">0</span></div>
+    <button class="btn btn-start" onclick="startGame()">Play Again</button>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-start" onclick="startGame()">New Game</button>
+  <button class="btn btn-pause" onclick="togglePause()">Pause</button>
+</div>
+
+<div class="mobile-controls">
+  <div class="btn-dir" onclick="changeDirection('up')">⬆️</div>
+  <div class="btn-dir" onclick="changeDirection('left')">⬅️</div>
+  <div class="btn-dir" onclick="changeDirection('down')">⬇️</div>
+  <div class="btn-dir" onclick="changeDirection('right')">➡️</div>
+</div>
+
+<div class="leaderboard">
+  <h3>🏆 Top Scores</h3>
+  <ul class="score-list" id="leaderboard"></ul>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>

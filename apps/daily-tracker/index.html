@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Tracker - Mini App</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.app-container {
+  max-width: 500px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.header {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+}
+.header h1 { font-size: 24px; margin-bottom: 5px; }
+.date-display { font-size: 14px; opacity: 0.9; }
+
+.body { padding: 20px; }
+
+/* Mood Tracker */
+.mood-section {
+  background: #f0fdf4;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+.mood-section h3 { margin-bottom: 15px; color: #166534; }
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.mood-btn {
+  background: white;
+  border: 2px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 15px 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.mood-btn:hover { transform: scale(1.05); }
+.mood-btn.selected {
+  border-color: #22c55e;
+  background: #dcfce7;
+}
+.mood-btn .emoji { font-size: 28px; display: block; margin-bottom: 5px; }
+.mood-btn .label { font-size: 10px; color: #166534; }
+
+/* Water Tracker */
+.water-section {
+  background: #eff6ff;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+.water-section h3 { margin-bottom: 15px; color: #1e40af; }
+.water-visual {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+.water-drop {
+  font-size: 32px;
+  opacity: 0.3;
+  transition: all 0.3s;
+}
+.water-drop.filled { opacity: 1; filter: drop-shadow(0 2px 4px rgba(59,130,246,0.5)); }
+.water-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.water-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+.water-btn:hover { background: #2563eb; }
+.water-btn.secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+.water-stats {
+  text-align: center;
+  margin-top: 10px;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Sleep Tracker */
+.sleep-section {
+  background: #faf5ff;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+.sleep-section h3 { margin-bottom: 15px; color: #6b21a8; }
+.sleep-input {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+.sleep-input input {
+  width: 80px;
+  padding: 12px;
+  border: 2px solid #d8b4fe;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+.sleep-input span { color: #7e22ce; }
+.sleep-btn {
+  background: #9333ea;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.sleep-display {
+  text-align: center;
+  margin-top: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 12px;
+}
+.sleep-display .hours { font-size: 32px; color: #7e22ce; font-weight: bold; }
+.sleep-display .label { color: #a855f7; font-size: 12px; }
+
+/* Task Tracker */
+.tasks-section {
+  background: #fff7ed;
+  padding: 20px;
+  border-radius: 16px;
+}
+.tasks-section h3 { margin-bottom: 15px; color: #9a3412; }
+.task-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.task-input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #fed7aa;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.task-add-btn {
+  background: #f97316;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 20px;
+}
+.task-list { max-height: 200px; overflow-y: auto; }
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.task-item.completed { opacity: 0.5; }
+.task-item.completed .task-text { text-decoration: line-through; }
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+.task-text { flex: 1; font-size: 14px; }
+.task-delete {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.progress-ring {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+}
+.progress-ring-bg {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 8;
+}
+.progress-ring-fill {
+  fill: none;
+  stroke: #22c55e;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 0.5s ease;
+}
+.progress-text {
+  fill: #166534;
+  font-size: 24px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <h1>📊 Daily Tracker</h1>
+    <div class="date-display" id="currentDate"></div>
+  </div>
+  
+  <div class="body">
+    <!-- Progress Ring -->
+    <svg class="progress-ring" viewBox="0 0 120 120">
+      <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+      <circle class="progress-ring-fill" id="progressRing" cx="60" cy="60" r="52" 
+        stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+      <text class="progress-text" x="60" y="60" id="progressText">0%</text>
+    </svg>
+
+    <!-- Mood Tracker -->
+    <div class="mood-section">
+      <h3>How are you feeling today?</h3>
+      <div class="mood-grid">
+        <div class="mood-btn" data-mood="1" onclick="setMood(1)">
+          <span class="emoji">😢</span>
+          <span class="label">Sad</span>
+        </div>
+        <div class="mood-btn" data-mood="2" onclick="setMood(2)">
+          <span class="emoji">😕</span>
+          <span class="label">Okay</span>
+        </div>
+        <div class="mood-btn" data-mood="3" onclick="setMood(3)">
+          <span class="emoji">😐</span>
+          <span class="label">Neutral</span>
+        </div>
+        <div class="mood-btn" data-mood="4" onclick="setMood(4)">
+          <span class="emoji">🙂</span>
+          <span class="label">Good</span>
+        </div>
+        <div class="mood-btn" data-mood="5" onclick="setMood(5)">
+          <span class="emoji">😄</span>
+          <span class="label">Great</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Water Tracker -->
+    <div class="water-section">
+      <h3>💧 Water Intake</h3>
+      <div class="water-visual" id="waterVisual">
+        <!-- Water drops will be generated here -->
+      </div>
+      <div class="water-controls">
+        <button class="water-btn" onclick="addWater()">+ Glass (250ml)</button>
+        <button class="water-btn secondary" onclick="resetWater()">Reset</button>
+      </div>
+      <div class="water-stats" id="waterStats">0 / 8 glasses (0ml / 2000ml)</div>
+    </div>
+
+    <!-- Sleep Tracker -->
+    <div class="sleep-section">
+      <h3>😴 Sleep Tracker</h3>
+      <div class="sleep-input">
+        <input type="number" id="sleepHours" min="0" max="24" step="0.5" placeholder="7">
+        <span>hours</span>
+        <input type="number" id="sleepMinutes" min="0" max="59" placeholder="30">
+        <span>min</span>
+        <button class="sleep-btn" onclick="logSleep()">Log</button>
+      </div>
+      <div class="sleep-display" id="sleepDisplay">
+        <div class="hours">--</div>
+        <div class="label">hours slept last night</div>
+      </div>
+    </div>
+
+    <!-- Task Tracker -->
+    <div class="tasks-section">
+      <h3>✅ Daily Tasks</h3>
+      <div class="task-input-group">
+        <input type="text" class="task-input" id="taskInput" placeholder="Add a new task...">
+        <button class="task-add-btn" onclick="addTask()">+</button>
+      </div>
+      <div class="task-list" id="taskList">
+        <!-- Tasks will be generated here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

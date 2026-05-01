@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ID Card PDF Maker - Mini Tool (Premium)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.app-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+  position: relative;
+}
+.premium-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+  color: #333;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+}
+.header h1 { font-size: 26px; margin-bottom: 5px; }
+.header p { opacity: 0.8; font-size: 14px; }
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .main-content { grid-template-columns: 1fr; }
+}
+
+.form-section {
+  background: rgba(255,255,255,0.95);
+  padding: 25px;
+  border-radius: 20px;
+}
+.form-section h2 {
+  font-size: 18px;
+  color: #1e3c72;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+.photo-section { margin-bottom: 25px; }
+.photo-upload {
+  border: 2px dashed #3b82f6;
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #eff6ff;
+}
+.photo-upload:hover { background: #dbeafe; }
+.photo-upload.has-photo {
+  border-style: solid;
+  background: white;
+  padding: 15px;
+}
+.photo-upload .icon { font-size: 48px; margin-bottom: 10px; }
+.photo-upload .text { color: #6b7280; font-size: 14px; }
+.photo-upload input { display: none; }
+.photo-preview {
+  max-width: 200px;
+  max-height: 250px;
+  margin: 0 auto;
+  position: relative;
+}
+.photo-preview img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.photo-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.control-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+.control-btn.secondary { background: #6b7280; }
+.control-btn.danger { background: #ef4444; }
+
+.input-group { margin-bottom: 15px; }
+.input-group label {
+  display: block;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.input-group input,
+.input-group select,
+.input-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+.input-group textarea { min-height: 60px; resize: vertical; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.preview-section {
+  background: rgba(255,255,255,0.95);
+  padding: 25px;
+  border-radius: 20px;
+}
+.preview-section h2 {
+  font-size: 18px;
+  color: #1e3c72;
+  margin-bottom: 20px;
+}
+.id-card-preview {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+.card-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.card-side {
+  width: 250px;
+  height: 400px;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+.card-side.back {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+.card-photo-area {
+  height: 180px;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 3px solid rgba(255,255,255,0.2);
+}
+.card-photo-area img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-photo-area .placeholder {
+  color: rgba(255,255,255,0.6);
+  font-size: 48px;
+}
+.card-info {
+  padding: 20px;
+  color: white;
+}
+.card-info .name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.card-info .title {
+  font-size: 12px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+.card-info .details {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.card-info .details div { margin-bottom: 8px; }
+.card-info .details .label { opacity: 0.7; font-size: 11px; }
+
+.card-back-content {
+  padding: 25px;
+  color: #374151;
+}
+.card-back-content h4 {
+  font-size: 14px;
+  color: #1e3c72;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.card-back-content .info-block {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.card-back-content .info-block p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+.qr-placeholder {
+  width: 80px;
+  height: 80px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.btn {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  color: white;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(59,130,246,0.4); }
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+  margin-top: 10px;
+}
+
+.template-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.template-btn {
+  padding: 10px 20px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+.template-btn.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.photo-editor {
+  background: #f3f4f6;
+  border-radius: 12px;
+  padding: 15px;
+  margin-top: 15px;
+}
+.photo-editor h4 {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 12px;
+}
+.slider-group {
+  margin-bottom: 12px;
+}
+.slider-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 5px;
+}
+.slider-group input[type="range"] {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #d1d5db;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.slider-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="premium-badge">⭐ PREMIUM</div>
+    <h1>🪪 ID Card PDF Maker</h1>
+    <p>Professional ID cards with photo crop, align & PDF export</p>
+  </div>
+
+  <div class="main-content">
+    <div class="form-section">
+      <h2>📸 Photo</h2>
+      <div class="photo-section">
+        <div class="photo-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
+          <div class="icon">📷</div>
+          <div class="text">Click to upload photo<br>or drag and drop</div>
+          <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)">
+        </div>
+        
+        <div class="photo-editor" id="photoEditor" style="display:none">
+          <h4>🔧 Photo Editor</h4>
+          <div class="slider-group">
+            <label>Zoom <span id="zoomValue">100%</span></label>
+            <input type="range" id="zoom" min="50" max="200" value="100" oninput="updatePhoto()">
+          </div>
+          <div class="slider-group">
+            <label>Rotate <span id="rotateValue">0°</span></label>
+            <input type="range" id="rotate" min="-180" max="180" value="0" oninput="updatePhoto()">
+          </div>
+          <div class="slider-group">
+            <label>Horizontal Shift <span id="shiftXValue">0</span></label>
+            <input type="range" id="shiftX" min="-50" max="50" value="0" oninput="updatePhoto()">
+          </div>
+          <div class="slider-group">
+            <label>Vertical Shift <span id="shiftYValue">0</span></label>
+            <input type="range" id="shiftY" min="-50" max="50" value="0" oninput="updatePhoto()">
+          </div>
+          <div class="photo-controls">
+            <button class="control-btn" onclick="resetPhoto()">Reset</button>
+            <button class="control-btn danger" onclick="removePhoto()">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <h2>📝 Card Information</h2>
+      
+      <div class="template-selector">
+        <button class="template-btn active" onclick="setTemplate('corporate')">Corporate</button>
+        <button class="template-btn" onclick="setTemplate('school')">School</button>
+        <button class="template-btn" onclick="setTemplate('event')">Event</button>
+        <button class="template-btn" onclick="setTemplate('simple')">Simple</button>
+      </div>
+
+      <div class="input-group">
+        <label>Organization Name</label>
+        <input type="text" id="orgName" placeholder="Company/School Name" oninput="updatePreview()">
+      </div>
+      
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="fullName" placeholder="John Doe" oninput="updatePreview()">
+      </div>
+      
+      <div class="input-group">
+        <label>Designation/Title</label>
+        <input type="text" id="designation" placeholder="Software Engineer" oninput="updatePreview()">
+      </div>
+
+      <div class="two-col">
+        <div class="input-group">
+          <label>ID Number</label>
+          <input type="text" id="idNumber" placeholder="EMP001" oninput="updatePreview()">
+        </div>
+        <div class="input-group">
+          <label>Department</label>
+          <input type="text" id="department" placeholder="IT" oninput="updatePreview()">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Valid Until</label>
+        <input type="date" id="validUntil" oninput="updatePreview()">
+      </div>
+
+      <div class="input-group">
+        <label>Emergency Contact</label>
+        <input type="text" id="emergency" placeholder="+1 234 567 8900" oninput="updatePreview()">
+      </div>
+
+      <div class="input-group">
+        <label>Back Side Information</label>
+        <textarea id="backInfo" placeholder="Terms, address, or other info..." oninput="updatePreview()"></textarea>
+      </div>
+    </div>
+
+    <div class="preview-section">
+      <h2>👁️ Preview</h2>
+      <div class="id-card-preview">
+        <div class="card-container">
+          <div class="card-side" id="frontCard">
+            <div class="card-photo-area" id="cardPhotoArea">
+              <span class="placeholder">👤</span>
+            </div>
+            <div class="card-info">
+              <div class="name" id="previewName">Your Name</div>
+              <div class="title" id="previewOrg">Organization</div>
+              <div class="details">
+                <div><span class="label">ID:</span> <span id="previewId">---</span></div>
+                <div><span class="label">Dept:</span> <span id="previewDept">---</span></div>
+                <div><span class="label">Valid:</span> <span id="previewValid">---</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-side back" id="backCard">
+            <div class="card-back-content">
+              <h4>Emergency Contact</h4>
+              <div class="info-block">
+                <p id="previewEmergency">Not specified</p>
+              </div>
+              <h4>Information</h4>
+              <div class="info-block">
+                <p id="previewBackInfo">No additional information</p>
+              </div>
+              <div class="qr-placeholder">📱</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <button class="btn btn-primary" onclick="generatePDF()">
+        📄 Generate PDF (Both Sides)
+      </button>
+      <button class="btn btn-secondary" onclick="saveTemplate()">
+        💾 Save Template
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

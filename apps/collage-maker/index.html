@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collage Maker - Mini Tool (Premium)</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.header {
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+  position: relative;
+}
+.premium-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+  color: #333;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+}
+.header h1 { font-size: 28px; margin-bottom: 5px; }
+.header p { opacity: 0.9; font-size: 14px; }
+
+.toolbar {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.tool-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255,255,255,0.2);
+  padding: 10px 15px;
+  border-radius: 12px;
+}
+.tool-group label { font-size: 12px; color: white; }
+.tool-group select, .tool-group input[type="color"] {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+}
+.tool-group input[type="color"] { padding: 2px; width: 40px; }
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary {
+  background: white;
+  color: #ff6b6b;
+}
+.btn-secondary {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid white;
+}
+.btn:hover { transform: translateY(-2px); }
+
+.collage-area {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+}
+
+.layout-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.layout-option {
+  aspect-ratio: 1;
+  background: #f3f4f6;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s;
+}
+.layout-option:hover { background: #e5e7eb; }
+.layout-option.selected {
+  border-color: #ff6b6b;
+  background: #fef2f2;
+}
+.layout-option .preview {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+}
+.layout-preview-grid {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+.layout-preview-grid .cell { background: #ff6b6b; border-radius: 2px; }
+
+#collageCanvas {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+.photo-upload-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+.upload-slot {
+  aspect-ratio: 1;
+  background: #f3f4f6;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.upload-slot:hover { border-color: #ff6b6b; background: #fef2f2; }
+.upload-slot.has-image { border-style: solid; border-color: #ff6b6b; }
+.upload-slot .icon { font-size: 24px; color: #9ca3af; margin-bottom: 5px; }
+.upload-slot .text { font-size: 11px; color: #9ca3af; }
+.upload-slot img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.upload-slot .remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 10;
+  display: none;
+}
+.upload-slot.has-image:hover .remove-btn { display: flex; align-items: center; justify-content: center; }
+
+.hidden-input { display: none; }
+
+.filter-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+.filter-btn {
+  padding: 8px 16px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+.filter-btn.active {
+  border-color: #ff6b6b;
+  background: #fef2f2;
+  color: #ff6b6b;
+}
+
+.text-overlay-section {
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+.text-overlay-section h3 { margin-bottom: 15px; color: #374151; }
+.text-input-group { margin-bottom: 12px; }
+.text-input-group label { display: block; font-size: 12px; color: #6b7280; margin-bottom: 5px; }
+.text-input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.export-section {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.history-section {
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 20px;
+}
+.history-section h3 { margin-bottom: 15px; color: #374151; }
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+.history-item {
+  aspect-ratio: 1;
+  background: #f3f4f6;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.history-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.history-item .date {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  font-size: 10px;
+  padding: 4px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="header">
+    <div class="premium-badge">⭐ PREMIUM</div>
+    <h1>🖼️ Collage Maker</h1>
+    <p>Create beautiful photo collages in seconds</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="tool-group">
+      <label>Border:</label>
+      <input type="color" id="borderColor" value="#ffffff" onchange="updateSettings()">
+      <select id="borderWidth" onchange="updateSettings()">
+        <option value="0">None</option>
+        <option value="5" selected>Small</option>
+        <option value="10">Medium</option>
+        <option value="20">Large</option>
+      </select>
+    </div>
+    <div class="tool-group">
+      <label>Radius:</label>
+      <select id="cornerRadius" onchange="updateSettings()">
+        <option value="0">Square</option>
+        <option value="10" selected>Small</option>
+        <option value="20">Medium</option>
+        <option value="40">Round</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+      📷 Add Photos
+    </button>
+  </div>
+
+  <div class="collage-area">
+    <h3 style="margin-bottom:15px;color:#374151">Choose Layout</h3>
+    <div class="layout-selector" id="layoutSelector">
+      <!-- Layouts generated by JS -->
+    </div>
+
+    <canvas id="collageCanvas" width="600" height="600"></canvas>
+
+    <div class="filter-options" id="filterOptions">
+      <button class="filter-btn active" onclick="applyFilter('none')">Normal</button>
+      <button class="filter-btn" onclick="applyFilter('grayscale')">B&W</button>
+      <button class="filter-btn" onclick="applyFilter('sepia')">Sepia</button>
+      <button class="filter-btn" onclick="applyFilter('vintage')">Vintage</button>
+      <button class="filter-btn" onclick="applyFilter('bright')">Bright</button>
+      <button class="filter-btn" onclick="applyFilter('contrast')">High Contrast</button>
+    </div>
+  </div>
+
+  <div class="text-overlay-section">
+    <h3>Text Overlay</h3>
+    <div class="text-input-group">
+      <label>Text</label>
+      <input type="text" id="overlayText" placeholder="Enter text..." oninput="updateSettings()">
+    </div>
+    <div class="tool-group" style="background:transparent;padding:0">
+      <label>Color:</label>
+      <input type="color" id="textColor" value="#ffffff" onchange="updateSettings()">
+      <label>Size:</label>
+      <select id="textSize" onchange="updateSettings()">
+        <option value="20">Small</option>
+        <option value="30" selected>Medium</option>
+        <option value="50">Large</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="export-section">
+    <button class="btn btn-primary" onclick="downloadCollage()">⬇️ Download HD</button>
+    <button class="btn btn-secondary" onclick="shareCollage()">📤 Share</button>
+    <button class="btn btn-secondary" onclick="clearAll()">🗑️ Clear</button>
+  </div>
+
+  <input type="file" id="fileInput" class="hidden-input" accept="image/*" multiple onchange="handleFileSelect(event)">
+
+  <div class="history-section">
+    <h3>📜 Recent Collages</h3>
+    <div class="history-grid" id="historyGrid">
+      <p style="color:#9ca3af;grid-column:1/-1;text-align:center;padding:20px">No collages created yet</p>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
